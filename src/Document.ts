@@ -1,9 +1,10 @@
-import { Cursor, EditorTextOperations, EditorCursorOperations, EditorState, OPERATION, Query, AppendQuery } from './typings';
+import { Cursor, EditorTextOperations, EditorCursorOperations, EditorClipboardOperations, EditorState, OPERATION, Query, AppendQuery } from './typings';
 
-class Document implements EditorTextOperations, EditorCursorOperations {
+class Document implements EditorTextOperations, EditorCursorOperations, EditorClipboardOperations {
     versions: string[] = [];
     cursor: Cursor = { left: 0, right: 0 };
     text: string = '';
+    clipboard: string = '';
     undoState: EditorState[] = [];
     redoState: EditorState[] = [];
 
@@ -22,6 +23,12 @@ class Document implements EditorTextOperations, EditorCursorOperations {
                 break;
             case OPERATION.SELECT:
                 this.select(rest.left, rest.right);
+                break;
+            case OPERATION.COPY:
+                this.copy();
+                break;
+            case OPERATION.PASTE:
+                this.paste();
                 break;
         }
         
@@ -58,6 +65,15 @@ class Document implements EditorTextOperations, EditorCursorOperations {
 
     public select(left: number = this.cursor.left, right: number = this.cursor.right): void {
         this.cursor = { left, right };
+    }
+
+    public copy(): void {
+        const { left, right } = this.cursor;
+        this.clipboard = this.text.substring(left, right);
+    }
+
+    public paste(): void {
+        this.append(this.clipboard);
     }
 }
 

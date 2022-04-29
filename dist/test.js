@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validate = void 0;
 const typings_1 = require("./typings");
-const validator1 = {
+const textOperationValidator1 = {
     input: [
         { operation: typings_1.OPERATION.APPEND, text: 'Hey' },
         { operation: typings_1.OPERATION.APPEND, text: ' there' },
@@ -10,7 +10,7 @@ const validator1 = {
     ],
     output: ['Hey', 'Hey there', 'Hey there!']
 };
-const validator2 = {
+const textOperationValidator2 = {
     input: [
         { operation: typings_1.OPERATION.APPEND, text: 'Hey you' },
         { operation: typings_1.OPERATION.MOVE, index: 3 },
@@ -18,7 +18,7 @@ const validator2 = {
     ],
     output: ['Hey you', 'Hey you', 'Hey, you']
 };
-const validator3 = {
+const cursorOperationValidator1 = {
     input: [
         { operation: typings_1.OPERATION.APPEND, text: 'Hello! world!' },
         { operation: typings_1.OPERATION.MOVE, index: 6 },
@@ -27,7 +27,7 @@ const validator3 = {
     ],
     output: ['Hello! world!', 'Hello! world!', 'Hello world!', 'Hello, world!']
 };
-const validator4 = {
+const cursorOperationValidator2 = {
     input: [
         { operation: typings_1.OPERATION.APPEND, text: '!' },
         { operation: typings_1.OPERATION.DELETE },
@@ -37,7 +37,7 @@ const validator4 = {
     ],
     output: ['!', '', '', '', '']
 };
-const validator5 = {
+const cursorOperationValidator3 = {
     input: [
         { operation: typings_1.OPERATION.APPEND, text: 'Hello cruel world!' },
         { operation: typings_1.OPERATION.SELECT, left: 5, right: 11 },
@@ -45,7 +45,7 @@ const validator5 = {
     ],
     output: ['Hello cruel world!', 'Hello cruel world!', 'Hello, world!']
 };
-const validator6 = {
+const cursorOperationValidator4 = {
     input: [
         { operation: typings_1.OPERATION.APPEND, text: 'Hello' },
         { operation: typings_1.OPERATION.SELECT, left: 2, right: 5 },
@@ -53,14 +53,26 @@ const validator6 = {
     ],
     output: ['Hello', 'Hello', 'Hey there']
 };
+const clipboardOperationValidator1 = {
+    input: [
+        { operation: typings_1.OPERATION.APPEND, text: 'Hello, world!' },
+        { operation: typings_1.OPERATION.SELECT, left: 5, right: 12 },
+        { operation: typings_1.OPERATION.COPY },
+        { operation: typings_1.OPERATION.MOVE, index: 12 },
+        { operation: typings_1.OPERATION.PASTE },
+        { operation: typings_1.OPERATION.PASTE }
+    ],
+    output: ['Hello, world!', 'Hello, world!', 'Hello, world!', 'Hello, world!', 'Hello, world, world!', 'Hello, world, world, world!']
+};
 const validate = (queryProcessor) => {
     [
-        validator1,
-        validator2,
-        validator3,
-        validator4,
-        validator5,
-        validator6
+        textOperationValidator1,
+        textOperationValidator2,
+        cursorOperationValidator1,
+        cursorOperationValidator2,
+        cursorOperationValidator3,
+        cursorOperationValidator4,
+        clipboardOperationValidator1
     ].forEach((validator, index) => {
         const { input, output: expectedOutput } = validator;
         const actualOutput = queryProcessor(input);

@@ -8,6 +8,11 @@ export interface EditorCursorOperations {
     select: (left: number, right: number) => void;
 }
 
+export interface EditorClipboardOperations {
+    copy: () => void;
+    paste: () => void;
+}
+
 export interface EditorStateOperations {
     undo: () => string;
     redo: () => string;

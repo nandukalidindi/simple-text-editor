@@ -17,6 +17,7 @@ class Document {
         this.versions = [];
         this.cursor = { left: 0, right: 0 };
         this.text = '';
+        this.clipboard = '';
         this.undoState = [];
         this.redoState = [];
     }
@@ -34,6 +35,12 @@ class Document {
                 break;
             case typings_1.OPERATION.SELECT:
                 this.select(rest.left, rest.right);
+                break;
+            case typings_1.OPERATION.COPY:
+                this.copy();
+                break;
+            case typings_1.OPERATION.PASTE:
+                this.paste();
                 break;
         }
         this.versions.push(this.text);
@@ -61,6 +68,13 @@ class Document {
     }
     select(left = this.cursor.left, right = this.cursor.right) {
         this.cursor = { left, right };
+    }
+    copy() {
+        const { left, right } = this.cursor;
+        this.clipboard = this.text.substring(left, right);
+    }
+    paste() {
+        this.append(this.clipboard);
     }
 }
 exports.default = Document;
