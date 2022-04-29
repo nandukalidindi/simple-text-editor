@@ -29,6 +29,12 @@ class Document {
             case typings_1.OPERATION.DELETE:
                 this.delete();
                 break;
+            case typings_1.OPERATION.MOVE:
+                this.move(rest.index);
+                break;
+            case typings_1.OPERATION.SELECT:
+                this.select(rest.left, rest.right);
+                break;
         }
         this.versions.push(this.text);
     }
@@ -45,10 +51,16 @@ class Document {
         const { left, right } = this.cursor;
         if (left == 0 || this.text == '')
             return;
-        const offset = left == right ? 1 : 0;
+        const offset = (left == right) ? 1 : 0;
         const newText = this.text.substring(0, left - offset) + this.text.substring(right);
         this.cursor = { left: left - offset, right: left - offset };
         this.text = newText;
+    }
+    move(index = this.cursor.left) {
+        this.cursor = { left: index, right: index };
+    }
+    select(left = this.cursor.left, right = this.cursor.right) {
+        this.cursor = { left, right };
     }
 }
 exports.default = Document;

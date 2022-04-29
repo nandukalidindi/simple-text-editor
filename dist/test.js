@@ -21,7 +21,7 @@ const validator2 = {
 const validator3 = {
     input: [
         { operation: typings_1.OPERATION.APPEND, text: 'Hello! world!' },
-        { operation: typings_1.OPERATION.MOVE, index: 5 },
+        { operation: typings_1.OPERATION.MOVE, index: 6 },
         { operation: typings_1.OPERATION.DELETE },
         { operation: typings_1.OPERATION.APPEND, text: ',' },
     ],
@@ -37,18 +37,38 @@ const validator4 = {
     ],
     output: ['!', '', '', '', '']
 };
+const validator5 = {
+    input: [
+        { operation: typings_1.OPERATION.APPEND, text: 'Hello cruel world!' },
+        { operation: typings_1.OPERATION.SELECT, left: 5, right: 11 },
+        { operation: typings_1.OPERATION.APPEND, text: ',' }
+    ],
+    output: ['Hello cruel world!', 'Hello cruel world!', 'Hello, world!']
+};
+const validator6 = {
+    input: [
+        { operation: typings_1.OPERATION.APPEND, text: 'Hello' },
+        { operation: typings_1.OPERATION.SELECT, left: 2, right: 5 },
+        { operation: typings_1.OPERATION.APPEND, text: 'y there' },
+    ],
+    output: ['Hello', 'Hello', 'Hey there']
+};
 const validate = (queryProcessor) => {
     [
         validator1,
         validator2,
         validator3,
-        validator4
+        validator4,
+        validator5,
+        validator6
     ].forEach((validator, index) => {
         const { input, output: expectedOutput } = validator;
         const actualOutput = queryProcessor(input);
         const result = (expectedOutput.length == actualOutput.length) && expectedOutput.every((exOut, index) => exOut == actualOutput[index]);
         console.log(`Test case ${index + 1}: ${result ? 'Correct' : 'Wrong'}`);
-        console.log(`Expected: ${expectedOutput} Actual: ${actualOutput}`);
+        console.log(`Expected: ${expectedOutput}`);
+        console.log(`Actual  : ${actualOutput}`);
+        console.log('\n\n');
     });
 };
 exports.validate = validate;

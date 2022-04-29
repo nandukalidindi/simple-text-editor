@@ -4,8 +4,8 @@ export interface EditorTextOperations {
 }
 
 export interface EditorCursorOperations {
-    move: (index: number) => string;
-    select: (left: number, right: number) => string;
+    move: (index: number) => void;
+    select: (left: number, right: number) => void;
 }
 
 export interface EditorStateOperations {
