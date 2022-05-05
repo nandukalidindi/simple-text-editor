@@ -69,6 +69,48 @@ const clipboardOperationValidator1: Validator = {
     output: ['Hello, world!', 'Hello, world!', 'Hello, world!', 'Hello, world!', 'Hello, world, world!', 'Hello, world, world, world!']
 };
 
+const undoRedoOperationValidator1: Validator = {
+    input: [
+        { operation: OPERATION.APPEND, text: 'Hello, world!' },
+        { operation: OPERATION.SELECT, left: 7, right: 12 },
+        { operation: OPERATION.DELETE },
+        { operation: OPERATION.UNDO },
+        { operation: OPERATION.APPEND, text: 'you' },
+    ],
+    output: ['Hello, world!', 'Hello, world!', 'Hello, !', 'Hello, world!', 'Hello, you!']
+};
+
+const undoRedoOperationValidator2: Validator = {
+    input: [
+        { operation: OPERATION.APPEND, text: 'Hello, world!' },
+        { operation: OPERATION.SELECT, left: 7, right: 12 },
+        { operation: OPERATION.DELETE },
+        { operation: OPERATION.MOVE, index: 6 },
+        { operation: OPERATION.UNDO },
+        { operation: OPERATION.UNDO },
+        { operation: OPERATION.REDO },
+        { operation: OPERATION.REDO }
+    ],
+    output: ['Hello, world!', 'Hello, world!', 'Hello, !', 'Hello, !', 'Hello, world!', '', 'Hello, world!', 'Hello, !']
+};
+
+const openCloseOperationValidator1: Validator = {
+    input: [
+        { operation: OPERATION.OPEN, document: 'document1' },
+        { operation: OPERATION.APPEND, text: 'Hello, world!' },
+        { operation: OPERATION.SELECT, left: 7, right: 12 },
+        { operation: OPERATION.COPY },
+        { operation: OPERATION.DELETE },
+        { operation: OPERATION.OPEN, document: 'document2' },
+        { operation: OPERATION.PASTE },
+        { operation: OPERATION.CLOSE, document: 'document2' },
+        { operation: OPERATION.UNDO },
+        { operation: OPERATION.OPEN, document: 'document2' },
+        { operation: OPERATION.UNDO },
+    ],
+    output: ['', 'Hello, world!', 'Hello, world!', 'Hello, world!', 'Hello, !', '', 'world', 'Hello, !', 'Hello, world!', 'world', 'world']
+}
+
 export const validate = (queryProcessor: (queries: Query[]) => string[]): void => {
     [
         textOperationValidator1,
@@ -77,7 +119,10 @@ export const validate = (queryProcessor: (queries: Query[]) => string[]): void =
         cursorOperationValidator2,
         cursorOperationValidator3,
         cursorOperationValidator4,
-        clipboardOperationValidator1
+        clipboardOperationValidator1,
+        undoRedoOperationValidator1,
+        undoRedoOperationValidator2,
+        openCloseOperationValidator1
     ].forEach((validator: Validator, index: number) => {
         const { input, output: expectedOutput } = validator;
         const actualOutput = queryProcessor(input);

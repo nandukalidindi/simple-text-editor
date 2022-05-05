@@ -1,21 +1,26 @@
-export interface EditorTextOperations {
+export interface EditorOperations {
+    open: (documentName: string) => void;
+    close: (documentName: string) => void;
+}
+
+export interface DocumentTextOperations {
     append: (text: string) => void;
     delete: () => void;
 }
 
-export interface EditorCursorOperations {
+export interface DocumentCursorOperations {
     move: (index: number) => void;
     select: (left: number, right: number) => void;
 }
 
-export interface EditorClipboardOperations {
+export interface DocumentClipboardOperations {
     copy: () => void;
     paste: () => void;
 }
 
-export interface EditorStateOperations {
-    undo: () => string;
-    redo: () => string;
+export interface DocumentStateOperations {
+    undo: () => void;
+    redo: () => void;
 }
 
 export type Cursor = {
@@ -39,11 +44,15 @@ export enum OPERATION {
     PASTE = "PASTE",
 
     UNDO = "UNDO",
-    REDO = "REDO"
+    REDO = "REDO",
+
+    OPEN = "OPEN",
+    CLOSE = "CLOSE"
 }
 
 export type Query = {
     operation: OPERATION;
+    document?: string;
     text?: string;
     index?: number;
     left?: number;

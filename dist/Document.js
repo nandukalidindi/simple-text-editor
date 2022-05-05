@@ -1,60 +1,26 @@
 "use strict";
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const typings_1 = require("./typings");
 class Document {
-    constructor() {
+    constructor(documentName, clipboard) {
+        this.documentName = '';
         this.versions = [];
         this.cursor = { left: 0, right: 0 };
         this.text = '';
-        this.clipboard = '';
+        this.clipboard = null;
         this.undoState = [];
         this.redoState = [];
-    }
-    processQuery(query) {
-        const { operation } = query, rest = __rest(query, ["operation"]);
-        switch (operation) {
-            case typings_1.OPERATION.APPEND:
-                this.append(rest.text);
-                break;
-            case typings_1.OPERATION.DELETE:
-                this.delete();
-                break;
-            case typings_1.OPERATION.MOVE:
-                this.move(rest.index);
-                break;
-            case typings_1.OPERATION.SELECT:
-                this.select(rest.left, rest.right);
-                break;
-            case typings_1.OPERATION.COPY:
-                this.copy();
-                break;
-            case typings_1.OPERATION.PASTE:
-                this.paste();
-                break;
-        }
-        this.versions.push(this.text);
-    }
-    processQueries(queries) {
-        queries.forEach(this.processQuery.bind(this));
+        this.documentName = documentName;
+        this.clipboard = clipboard;
     }
     append(text = '') {
+        this.undoState.push({ cursor: this.cursor, text: this.text });
         const { left, right } = this.cursor;
         const newText = this.text.substring(0, left) + text + this.text.substring(right);
         this.cursor = { left: left + text.length, right: left + text.length };
         this.text = newText;
     }
     delete() {
+        this.undoState.push({ cursor: this.cursor, text: this.text });
         const { left, right } = this.cursor;
         if (left == 0 || this.text == '')
             return;
@@ -71,10 +37,27 @@ class Document {
     }
     copy() {
         const { left, right } = this.cursor;
-        this.clipboard = this.text.substring(left, right);
+        this.clipboard.text = this.text.substring(left, right);
     }
     paste() {
-        this.append(this.clipboard);
+        this.undoState.push({ cursor: this.cursor, text: this.text });
+        this.append(this.clipboard.text);
+    }
+    undo() {
+        if (this.undoState.length > 0) {
+            this.redoState.push({ text: this.text, cursor: this.cursor });
+            const { cursor, text } = this.undoState.pop();
+            this.text = text;
+            this.cursor = cursor;
+        }
+    }
+    redo() {
+        if (this.redoState.length > 0) {
+            this.undoState.push({ text: this.text, cursor: this.cursor });
+            const { cursor, text } = this.redoState.pop();
+            this.text = text;
+            this.cursor = cursor;
+        }
     }
 }
 exports.default = Document;

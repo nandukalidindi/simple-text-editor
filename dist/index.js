@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Document_1 = __importDefault(require("./Document"));
+const Editor_1 = __importDefault(require("./Editor"));
 const test_1 = require("./test");
 const queryProcessor = (queries) => {
-    const document = new Document_1.default();
-    document.processQueries(queries);
-    return document.versions;
+    const editor = new Editor_1.default();
+    editor.processQueries(queries);
+    return editor.versions;
 };
 (0, test_1.validate)(queryProcessor);
 //# sourceMappingURL=index.js.map

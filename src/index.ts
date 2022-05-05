@@ -2,12 +2,13 @@
 
 import { Query } from "./typings"
 import Document from "./Document";
+import Editor from './Editor';
 import { validate } from "./test";
 
 const queryProcessor = (queries: Query[]): string[] => {
-    const document = new Document();
-    document.processQueries(queries);
-    return document.versions;
+    const editor: Editor = new Editor();
+    editor.processQueries(queries);
+    return editor.versions;
 };
 
 validate(queryProcessor);

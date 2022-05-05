@@ -1,45 +1,26 @@
-import { Cursor, EditorTextOperations, EditorCursorOperations, EditorClipboardOperations, EditorState, OPERATION, Query, AppendQuery } from './typings';
+import { 
+    Cursor, EditorState,
+    DocumentTextOperations, DocumentCursorOperations, DocumentClipboardOperations, DocumentStateOperations
+} from './typings';
+import EditorClipboard from './Clipboard';
 
-class Document implements EditorTextOperations, EditorCursorOperations, EditorClipboardOperations {
+class Document implements DocumentTextOperations, DocumentCursorOperations, DocumentClipboardOperations, DocumentStateOperations {
+    documentName: string = '';
     versions: string[] = [];
     cursor: Cursor = { left: 0, right: 0 };
     text: string = '';
-    clipboard: string = '';
+    clipboard: EditorClipboard = null;
     undoState: EditorState[] = [];
     redoState: EditorState[] = [];
 
-    private processQuery(query: Query): void {
-        const { operation, ...rest } = query;
-
-        switch(operation) {
-            case OPERATION.APPEND:
-                this.append(rest.text);
-                break;
-            case OPERATION.DELETE:
-                this.delete();
-                break;
-            case OPERATION.MOVE:
-                this.move(rest.index);
-                break;
-            case OPERATION.SELECT:
-                this.select(rest.left, rest.right);
-                break;
-            case OPERATION.COPY:
-                this.copy();
-                break;
-            case OPERATION.PASTE:
-                this.paste();
-                break;
-        }
-        
-        this.versions.push(this.text);
-    }
-
-    public processQueries(queries: Query[]): void {
-        queries.forEach(this.processQuery.bind(this));
+    constructor(documentName: string, clipboard: EditorClipboard) {
+        this.documentName = documentName;
+        this.clipboard = clipboard;
     }
 
     public append(text: string = ''): void {
+        this.undoState.push({ cursor: this.cursor, text: this.text });
+
         const { left, right } = this.cursor;
         const newText = this.text.substring(0, left) + text + this.text.substring(right);
 
@@ -48,6 +29,8 @@ class Document implements EditorTextOperations, EditorCursorOperations, EditorCl
     }
 
     public delete(): void {
+        this.undoState.push({ cursor: this.cursor, text: this.text });
+
         const { left, right } = this.cursor;
 
         if(left == 0 || this.text == '') return;
@@ -69,11 +52,30 @@ class Document implements EditorTextOperations, EditorCursorOperations, EditorCl
 
     public copy(): void {
         const { left, right } = this.cursor;
-        this.clipboard = this.text.substring(left, right);
+        this.clipboard.text = this.text.substring(left, right);
     }
 
     public paste(): void {
-        this.append(this.clipboard);
+        this.undoState.push({ cursor: this.cursor, text: this.text });
+        this.append(this.clipboard.text);
+    }
+
+    public undo(): void {
+        if(this.undoState.length > 0) {
+            this.redoState.push({ text: this.text, cursor: this.cursor });
+            const { cursor, text } = this.undoState.pop()!;
+            this.text = text;
+            this.cursor = cursor;
+        }
+    }
+
+    public redo(): void { 
+        if(this.redoState.length > 0) {
+            this.undoState.push({ text: this.text, cursor: this.cursor });
+            const { cursor, text } = this.redoState.pop()!;
+            this.text = text;
+            this.cursor = cursor;
+        }
     }
 }
 

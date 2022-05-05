@@ -11,5 +11,7 @@ var OPERATION;
     OPERATION["PASTE"] = "PASTE";
     OPERATION["UNDO"] = "UNDO";
     OPERATION["REDO"] = "REDO";
+    OPERATION["OPEN"] = "OPEN";
+    OPERATION["CLOSE"] = "CLOSE";
 })(OPERATION = exports.OPERATION || (exports.OPERATION = {}));
 //# sourceMappingURL=typings.js.map
