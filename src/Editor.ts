@@ -10,7 +10,8 @@ class Editor implements EditorOperations {
 
     get activeDocument(): Document {
         if(this.documents.length > 0) {
-            return this.documents[this.documents.length - 1];
+            const recentDocument: Document = this.documents[this.documents.length - 1];
+            return recentDocument.state === 'OPEN' ? recentDocument : null;
         } else {
             return this.placeholderDocument;
         }
@@ -19,6 +20,8 @@ class Editor implements EditorOperations {
     private processQuery(query: Query): void {
         const { operation, ...rest } = query;
         const documentName = rest.document;
+
+        if(this.activeDocument == null) return;
 
         switch(operation) {
             case OPERATION.OPEN:
@@ -65,6 +68,7 @@ class Editor implements EditorOperations {
     public open(documentName: string): void { 
         const existingDocument: Document = this.documents.find(doc => doc.documentName == documentName);
         if(existingDocument) {
+            existingDocument.state = 'OPEN';
             this.documents = [...this.documents.filter(doc => doc.documentName != documentName), existingDocument];
         } else {
             const newDocument: Document = new Document(documentName, this.clipboard);
@@ -75,7 +79,9 @@ class Editor implements EditorOperations {
     public close(documentName: string): void {
         const existingDocument: Document = this.documents.find(doc => doc.documentName == documentName);
         if(existingDocument) {
-            this.documents = [...this.documents.filter(doc => doc.documentName != documentName), existingDocument];
+            existingDocument.state = 'CLOSE';
+            existingDocument.onClose();
+            this.documents = [existingDocument, ...this.documents.filter(doc => doc.documentName != documentName)];
         }
     }
 }

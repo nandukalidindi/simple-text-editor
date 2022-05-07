@@ -5,8 +5,8 @@ import {
 import EditorClipboard from './Clipboard';
 
 class Document implements DocumentTextOperations, DocumentCursorOperations, DocumentClipboardOperations, DocumentStateOperations {
+    state: string = 'CLOSE';
     documentName: string = '';
-    versions: string[] = [];
     cursor: Cursor = { left: 0, right: 0 };
     text: string = '';
     clipboard: EditorClipboard = null;
@@ -16,6 +16,13 @@ class Document implements DocumentTextOperations, DocumentCursorOperations, Docu
     constructor(documentName: string, clipboard: EditorClipboard) {
         this.documentName = documentName;
         this.clipboard = clipboard;
+        this.state = 'OPEN';
+    }
+
+    public onClose(): void {
+        this.cursor = { left: this.text.length, right: this.text.length };
+        this.undoState = [];
+        this.redoState = [];
     }
 
     public append(text: string = ''): void {

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 class Document {
     constructor(documentName, clipboard) {
+        this.state = 'CLOSE';
         this.documentName = '';
-        this.versions = [];
         this.cursor = { left: 0, right: 0 };
         this.text = '';
         this.clipboard = null;
@@ -11,6 +11,12 @@ class Document {
         this.redoState = [];
         this.documentName = documentName;
         this.clipboard = clipboard;
+        this.state = 'OPEN';
+    }
+    onClose() {
+        this.cursor = { left: this.text.length, right: this.text.length };
+        this.undoState = [];
+        this.redoState = [];
     }
     append(text = '') {
         this.undoState.push({ cursor: this.cursor, text: this.text });

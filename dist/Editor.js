@@ -26,7 +26,8 @@ class Editor {
     }
     get activeDocument() {
         if (this.documents.length > 0) {
-            return this.documents[this.documents.length - 1];
+            const recentDocument = this.documents[this.documents.length - 1];
+            return recentDocument.state === 'OPEN' ? recentDocument : null;
         }
         else {
             return this.placeholderDocument;
@@ -35,6 +36,8 @@ class Editor {
     processQuery(query) {
         const { operation } = query, rest = __rest(query, ["operation"]);
         const documentName = rest.document;
+        if (this.activeDocument == null)
+            return;
         switch (operation) {
             case typings_1.OPERATION.OPEN:
                 if (!documentName)
@@ -79,6 +82,7 @@ class Editor {
     open(documentName) {
         const existingDocument = this.documents.find(doc => doc.documentName == documentName);
         if (existingDocument) {
+            existingDocument.state = 'OPEN';
             this.documents = [...this.documents.filter(doc => doc.documentName != documentName), existingDocument];
         }
         else {
@@ -89,7 +93,9 @@ class Editor {
     close(documentName) {
         const existingDocument = this.documents.find(doc => doc.documentName == documentName);
         if (existingDocument) {
-            this.documents = [...this.documents.filter(doc => doc.documentName != documentName), existingDocument];
+            existingDocument.state = 'CLOSE';
+            existingDocument.onClose();
+            this.documents = [existingDocument, ...this.documents.filter(doc => doc.documentName != documentName)];
         }
     }
 }

@@ -120,8 +120,8 @@ const validate = (queryProcessor) => {
         const actualOutput = queryProcessor(input);
         const result = (expectedOutput.length == actualOutput.length) && expectedOutput.every((exOut, index) => exOut == actualOutput[index]);
         console.log(`Test case ${index + 1}: ${result ? 'Correct' : 'Wrong'}`);
-        console.log(`Expected: ${expectedOutput}`);
-        console.log(`Actual  : ${actualOutput}`);
+        console.log(`Expected: ${expectedOutput.join(' : ')}`);
+        console.log(`Actual  : ${actualOutput.join(' : ')}`);
         console.log('\n\n');
     });
 };
