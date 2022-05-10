@@ -22,7 +22,7 @@ class Editor {
         this.documents = [];
         this.clipboard = new Clipboard_1.default();
         this.versions = [];
-        this.placeholderDocument = new Document_1.default('Placeholder', new Clipboard_1.default());
+        this.placeholderDocument = new Document_1.default('placeholder', new Clipboard_1.default());
     }
     get activeDocument() {
         if (this.documents.length > 0) {
@@ -36,7 +36,7 @@ class Editor {
     processQuery(query) {
         const { operation } = query, rest = __rest(query, ["operation"]);
         const documentName = rest.document;
-        if (this.activeDocument == null)
+        if (this.activeDocument == null && operation !== typings_1.OPERATION.OPEN)
             return;
         switch (operation) {
             case typings_1.OPERATION.OPEN:

@@ -6,7 +6,7 @@ class Editor implements EditorOperations {
     documents: Document[] = [];
     clipboard: EditorClipboard = new EditorClipboard();
     versions: string[] = [];
-    placeholderDocument: Document = new Document('Placeholder', new EditorClipboard());
+    placeholderDocument: Document = new Document('placeholder', new EditorClipboard());
 
     get activeDocument(): Document {
         if(this.documents.length > 0) {
@@ -21,7 +21,7 @@ class Editor implements EditorOperations {
         const { operation, ...rest } = query;
         const documentName = rest.document;
 
-        if(this.activeDocument == null) return;
+        if(this.activeDocument == null && operation !== OPERATION.OPEN) return;
 
         switch(operation) {
             case OPERATION.OPEN:
